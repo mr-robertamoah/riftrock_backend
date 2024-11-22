@@ -19,6 +19,7 @@ model User {
   password String
   firstName String? 
   lastName  String?
+  otherNames  String?
   role Role @default(USER)
 }
 

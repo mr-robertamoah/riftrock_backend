@@ -3,6 +3,7 @@ export class CreateUserDTO {
   password: string;
   firstName: string;
   lastName: string;
+  otherNames: string;
   role: string;
   id: number;
 }
