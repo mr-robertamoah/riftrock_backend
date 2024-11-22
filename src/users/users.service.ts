@@ -13,6 +13,8 @@ export class UsersService {
       where: { email },
     });
 
+    if (!user) return null;
+
     delete user.password;
 
     return user;
