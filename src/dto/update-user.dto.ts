@@ -1,3 +1,4 @@
+import { Role } from '@prisma/client';
 import { IsNotEmpty, ValidateIf } from 'class-validator';
 
 export class UpdateUserDTO {
@@ -10,6 +11,5 @@ export class UpdateUserDTO {
   firstName: string | null;
   lastName: string | null;
   otherNames: string | null;
-  @IsNotEmpty()
-  userId: number;
+  role: string | Role;
 }

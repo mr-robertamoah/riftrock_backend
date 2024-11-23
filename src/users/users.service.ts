@@ -1,10 +1,16 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDTO } from 'src/dto/create-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDTO } from 'src/dto/update-user.dto';
+import { MakeAdminDTO } from 'src/dto/make-admin.dto';
+import { User } from '@prisma/client';
 
-export type User = any;
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
@@ -33,7 +39,64 @@ export class UsersService {
     return user;
   }
 
-  async updateUser(updateUserDTO: UpdateUserDTO): Promise<User> {
+  async makeAdmin(admin, makeAdminDTO: MakeAdminDTO): Promise<User> {
+    const checkAdmin = await this.prisma.user.findFirst({
+      where: { id: admin.userId },
+    });
+
+    if (checkAdmin.role == 'USER')
+      throw new UnauthorizedException('You cannot make a user an admin.');
+
+    let user = await this.prisma.user.findFirst({
+      where: { id: makeAdminDTO.userId },
+    });
+
+    if (!user) throw new NotFoundException('User not found.');
+
+    if (user.role == 'ADMIN')
+      throw new ForbiddenException('User is already an administrator.');
+
+    user = await this.prisma.user.update({
+      where: { id: user.id },
+      data: { role: 'ADMIN' },
+    });
+
+    delete user.password;
+
+    return user;
+  }
+
+  async makeUser(superAdmin, makeAdminDTO: MakeAdminDTO): Promise<User> {
+    const checkAdmin = await this.prisma.user.findFirst({
+      where: { id: superAdmin.userId },
+    });
+
+    if (checkAdmin.role !== 'SUPER_ADMIN')
+      throw new UnauthorizedException('You cannot make an admin a user.');
+
+    let user = await this.prisma.user.findFirst({
+      where: { id: makeAdminDTO.userId },
+    });
+
+    if (!user) throw new NotFoundException('User not found.');
+
+    if (user.role !== 'ADMIN')
+      throw new ForbiddenException('User is already an administrator.');
+
+    user = await this.prisma.user.update({
+      where: { id: user.id },
+      data: { role: 'ADMIN' },
+    });
+
+    delete user.password;
+
+    return user;
+  }
+
+  async updateUser(user, updateUserDTO: UpdateUserDTO): Promise<User> {
+    user = await this.prisma.user.findFirst({
+      where: { id: user.userId },
+    });
     const data = new UpdateUserDTO();
 
     if (updateUserDTO.firstName) data.firstName = updateUserDTO.firstName;
@@ -51,8 +114,9 @@ export class UsersService {
       delete data.passwordConfirmation;
     }
 
-    const user = await this.prisma.user.update({
-      where: { id: data.userId },
+    data.role = user.role;
+    user = await this.prisma.user.update({
+      where: { id: user.id },
       data,
     });
 
