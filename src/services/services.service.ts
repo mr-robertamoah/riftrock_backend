@@ -5,7 +5,7 @@ import {
   NotImplementedException,
 } from '@nestjs/common';
 import { CreateServiceDTO } from 'src/dto/create-service.dto';
-import { GetServicesDTO } from 'src/dto/get-services.dto';
+import { GetItemsDTO } from 'src/dto/get-items.dto';
 import { UpdateServiceDTO } from 'src/dto/update-service.dto';
 import { FilesService } from 'src/files/files.service';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -138,9 +138,9 @@ export class ServicesService {
     return { success: true };
   }
 
-  async get(getServicesDTO: GetServicesDTO) {
+  async get(getServicesDTO: GetItemsDTO) {
     const limit = getServicesDTO.limit ? Number(getServicesDTO.limit) : 10;
-    const page = getServicesDTO.page ? Number(getServicesDTO.page) : 1;d
+    const page = getServicesDTO.page ? Number(getServicesDTO.page) : 1;
     const take = limit;
     const skip = (page - 1) * take;
 
@@ -157,7 +157,7 @@ export class ServicesService {
       data: services,
       meta: {
         total,
-        page: Number(getServicesDTO.limit),
+        page,
         limit,
         lastPage: Math.ceil(total / limit),
       },

@@ -8,9 +8,10 @@ import { ConfigModule } from '@nestjs/config';
 import { ServicesModule } from './services/services.module';
 import { FilesModule } from './files/files.module';
 import { AwsS3Module } from './aws-s3/aws-s3.module';
+import { ContactsModule } from './contacts/contacts.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, PrismaModule, ConfigModule.forRoot(), ServicesModule, FilesModule, AwsS3Module],
+  imports: [AuthModule, UsersModule, PrismaModule, ConfigModule.forRoot(), ServicesModule, FilesModule, AwsS3Module, ContactsModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request,
   UploadedFile,
   UseGuards,
@@ -16,7 +17,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateServiceDTO } from 'src/dto/create-service.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateServiceDTO } from 'src/dto/update-service.dto';
-import { GetServicesDTO } from 'src/dto/get-services.dto';
+import { GetItemsDTO } from 'src/dto/get-items.dto';
 
 @Controller('services')
 export class ServicesController {
@@ -51,7 +52,7 @@ export class ServicesController {
   }
 
   @Get('')
-  async getServices(@Body() getServicesDTO: GetServicesDTO) {
+  async getServices(@Query() getServicesDTO: GetItemsDTO) {
     return this.servicesService.get(getServicesDTO);
   }
 }

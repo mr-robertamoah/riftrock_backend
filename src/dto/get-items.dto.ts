@@ -1,6 +1,6 @@
 import { Optional } from '@nestjs/common';
 
-export class GetServicesDTO {
+export class GetItemsDTO {
   @Optional()
   page?: number;
   @Optional()
