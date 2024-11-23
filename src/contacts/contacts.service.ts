@@ -13,7 +13,7 @@ export class ContactsService {
     });
   }
 
-  async makeContact(user, contactId: number) {
+  async markContact(user, contactId: number) {
     const contact = await this.prisma.contact.findFirst({
       where: { id: contactId },
     });

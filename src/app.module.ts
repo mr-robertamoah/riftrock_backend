@@ -9,6 +9,7 @@ import { ServicesModule } from './services/services.module';
 import { FilesModule } from './files/files.module';
 import { AwsS3Module } from './aws-s3/aws-s3.module';
 import { ContactsModule } from './contacts/contacts.module';
+import { DetailsModule } from './details/details.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ContactsModule } from './contacts/contacts.module';
     FilesModule,
     AwsS3Module,
     ContactsModule,
+    DetailsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
