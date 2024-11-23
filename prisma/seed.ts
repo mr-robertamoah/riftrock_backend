@@ -10,7 +10,7 @@ async function main() {
       password: await bcryt.hash(process.env.ADMIN_PASSWORD ?? 'password', 10),
       firstName: 'Robert',
       lastName: 'Amoah',
-      role: 'ADMIN',
+      role: 'SUPER_ADMIN',
     },
   });
 }

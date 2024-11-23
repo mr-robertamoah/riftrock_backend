@@ -11,13 +11,13 @@ export class UsersController {
   // TODO implement unmake admin
 
   @UseGuards(JwtAuthGuard)
-  @Patch('update')
+  @Patch('make-admin')
   async makeUserAdmin(@Request() request, @Body() makeAdminDTO: MakeAdminDTO) {
     return await this.usersService.makeAdmin(request.user, makeAdminDTO);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('update')
+  @Patch('make-user')
   async makeAdminUser(@Request() request, @Body() makeAdminDTO: MakeAdminDTO) {
     return await this.usersService.makeUser(request.user, makeAdminDTO);
   }

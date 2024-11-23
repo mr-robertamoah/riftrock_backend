@@ -22,8 +22,6 @@ export class UsersService {
 
     if (!user) return null;
 
-    delete user.password;
-
     return user;
   }
 
@@ -48,10 +46,12 @@ export class UsersService {
       throw new UnauthorizedException('You cannot make a user an admin.');
 
     let user = await this.prisma.user.findFirst({
-      where: { id: makeAdminDTO.userId },
+      where: { id: Number(makeAdminDTO.userId) },
     });
 
     if (!user) throw new NotFoundException('User not found.');
+    if (user.id == checkAdmin.id)
+      throw new UnauthorizedException('You cannot update your own role.');
 
     if (user.role == 'ADMIN')
       throw new ForbiddenException('User is already an administrator.');
@@ -75,17 +75,19 @@ export class UsersService {
       throw new UnauthorizedException('You cannot make an admin a user.');
 
     let user = await this.prisma.user.findFirst({
-      where: { id: makeAdminDTO.userId },
+      where: { id: Number(makeAdminDTO.userId) },
     });
 
     if (!user) throw new NotFoundException('User not found.');
+    if (user.id == checkAdmin.id)
+      throw new UnauthorizedException('You cannot update your own role.');
 
-    if (user.role !== 'ADMIN')
-      throw new ForbiddenException('User is already an administrator.');
+    if (user.role == 'USER')
+      throw new ForbiddenException('User is not an administrator.');
 
     user = await this.prisma.user.update({
       where: { id: user.id },
-      data: { role: 'ADMIN' },
+      data: { role: 'USER' },
     });
 
     delete user.password;
@@ -114,7 +116,6 @@ export class UsersService {
       delete data.passwordConfirmation;
     }
 
-    data.role = user.role;
     user = await this.prisma.user.update({
       where: { id: user.id },
       data,
