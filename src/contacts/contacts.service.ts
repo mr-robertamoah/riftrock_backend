@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateContactDTO } from 'src/dto/create-contact.dto';
 import { GetItemsDTO } from 'src/dto/get-items.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -13,17 +17,37 @@ export class ContactsService {
     });
   }
 
-  async markContact(user, contactId: number) {
+  async mark(user, contactId: number) {
     const contact = await this.prisma.contact.findFirst({
       where: { id: contactId },
     });
 
     if (!contact) throw new NotFoundException('Contact was not found.');
 
-    await this.prisma.contact.update({
+    return await this.prisma.contact.update({
       where: { id: contactId },
       data: { seen: true, userId: Number(user.userId) },
     });
+  }
+
+  async delete(user, contactId: number) {
+    user = await this.prisma.contact.findFirst({
+      where: { id: contactId },
+    });
+
+    if (['ADMIN', 'SUPER_ADMIN'].includes(user.role))
+      throw new ForbiddenException('You cannot delete a contact.');
+
+    const contact = await this.prisma.contact.findFirst({
+      where: { id: contactId },
+    });
+
+    if (!contact) throw new NotFoundException('Contact was not found.');
+
+    await this.prisma.contact.delete({
+      where: { id: contactId },
+    });
+
     return { success: true };
   }
 

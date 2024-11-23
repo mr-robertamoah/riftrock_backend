@@ -24,18 +24,18 @@ export class DetailsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('{id}')
+  @Patch(':id')
   async updateDetail(
     @Request() request,
-    @Param() id,
+    @Param('id') id: number,
     @Body() updateDetailDTO: UpdateDetailDTO,
   ) {
     return await this.detailsService.update(request.user, id, updateDetailDTO);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('{id}')
-  async deleteDetail(@Request() request, @Param() id) {
+  @Delete(':id')
+  async deleteDetail(@Request() request, @Param('id') id: number) {
     return await this.detailsService.delete(request.user, id);
   }
 }

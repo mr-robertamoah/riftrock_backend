@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -24,9 +25,15 @@ export class ContactsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('{id}')
-  async markContact(@Request() request, @Param() id) {
-    return await this.contactsService.markContact(request.user, Number(id));
+  @Patch(':id')
+  async markContact(@Request() request, @Param('id') id: number) {
+    return await this.contactsService.mark(request.user, Number(id));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  async deleteContact(@Request() request, @Param('id') id: number) {
+    return await this.contactsService.delete(request.user, Number(id));
   }
 
   @Get('')
