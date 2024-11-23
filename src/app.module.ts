@@ -11,7 +11,16 @@ import { AwsS3Module } from './aws-s3/aws-s3.module';
 import { ContactsModule } from './contacts/contacts.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, PrismaModule, ConfigModule.forRoot(), ServicesModule, FilesModule, AwsS3Module, ContactsModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    PrismaModule,
+    ConfigModule.forRoot(),
+    ServicesModule,
+    FilesModule,
+    AwsS3Module,
+    ContactsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

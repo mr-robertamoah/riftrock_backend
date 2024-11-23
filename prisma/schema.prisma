@@ -24,6 +24,7 @@ model User {
   addedServices Service[]
   addedProducts Product[]
   markedContacts Contact[]
+  addedDetails Detail[]
   addedFiles File[]
 
   createdAt DateTime @default(now())
@@ -70,6 +71,18 @@ model Contact {
 
   userId    Int?
   user User? @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Detail {
+  id       Int   @id @default(autoincrement())
+  key String
+  value Json
+
+  userId    Int
+  user User @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
