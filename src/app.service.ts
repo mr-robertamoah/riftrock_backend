@@ -10,12 +10,14 @@ export class AppService {
   ) {}
 
   async getAll() {
+    const details = await this.prisma.detail.findMany();
     const services = await this.servicesServics.get({
       limit: 10,
       page: 1,
     });
 
     return {
+      details,
       services,
     };
   }

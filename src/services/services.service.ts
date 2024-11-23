@@ -77,7 +77,12 @@ export class ServicesService {
     )
       throw new NotImplementedException('Insufficient data to update service.');
 
-    const data = {};
+    const data: {
+      title?: string;
+      icon?: string;
+      description?: string;
+      details?: string;
+    } = {};
 
     if (updateServiceDTO.title) data.title = updateServiceDTO.title;
     if (updateServiceDTO.icon) data.icon = updateServiceDTO.icon;
@@ -96,9 +101,11 @@ export class ServicesService {
         throw new NotImplementedException('Failed to update service.');
     }
 
-    let file = null;
-    if (uploadedFile && service.files.length)
-      await this.filesService.deleteFile(service.files[0]);
+    let file = await this.prisma.file.findFirst({
+      where: { morphId: service.id, morphType: 'Service' },
+    });
+
+    if (uploadedFile && file) await this.filesService.deleteFile(file);
 
     if (uploadedFile) {
       file = await this.filesService.uploadFile(user, {
