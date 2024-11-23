@@ -62,6 +62,7 @@ model Product {
 model File {
   id       Int   @id @default(autoincrement())
   url String
+  key String
   description String?
 
   morphId Int
