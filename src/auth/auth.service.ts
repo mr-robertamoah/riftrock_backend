@@ -5,7 +5,7 @@ import * as bcryt from 'bcrypt';
 import { User } from '@prisma/client';
 import { LoginDTO } from 'src/dto/login.dto';
 import { RegisterDTO } from 'src/dto/register.dto';
-import { CreateUserDTO } from 'src/dto/createuser.dto';
+import { CreateUserDTO } from 'src/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
