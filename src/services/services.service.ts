@@ -5,6 +5,7 @@ import {
   NotImplementedException,
 } from '@nestjs/common';
 import { CreateServiceDTO } from 'src/dto/create-service.dto';
+import { GetServicesDTO } from 'src/dto/get-services.dto';
 import { UpdateServiceDTO } from 'src/dto/update-service.dto';
 import { FilesService } from 'src/files/files.service';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -133,5 +134,31 @@ export class ServicesService {
     });
 
     return { success: true };
+  }
+
+  async get(getServicesDTO: GetServicesDTO) {
+    const limit = getServicesDTO.limit ? Number(getServicesDTO.limit) : 10;
+    const page = getServicesDTO.page ? Number(getServicesDTO.page) : 1;d
+    const take = limit;
+    const skip = (page - 1) * take;
+
+    const [services, total] = await Promise.all([
+      this.prisma.service.findMany({
+        take,
+        skip,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.service.count(),
+    ]);
+
+    return {
+      data: services,
+      meta: {
+        total,
+        page: Number(getServicesDTO.limit),
+        limit,
+        lastPage: Math.ceil(total / limit),
+      },
+    };
   }
 }
