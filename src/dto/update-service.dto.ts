@@ -1,5 +1,6 @@
 export class UpdateServiceDTO {
-  name: string | null;
+  title: string | null;
+  icon: string | null;
   description: string | null;
   details: string | null;
   file: File | null;

@@ -27,7 +27,8 @@ export class ServicesService {
     const service = await this.prisma.service.create({
       data: {
         userId: user.id,
-        name: createServiceDTO.name,
+        title: createServiceDTO.title,
+        icon: createServiceDTO.icon,
         description: createServiceDTO.description,
         details: createServiceDTO.details,
       },
@@ -69,7 +70,7 @@ export class ServicesService {
       );
 
     if (
-      !updateServiceDTO.name &&
+      !updateServiceDTO.title &&
       !updateServiceDTO.description &&
       !updateServiceDTO.details &&
       !uploadedFile
@@ -78,7 +79,8 @@ export class ServicesService {
 
     const data = {};
 
-    if (updateServiceDTO.name) data.name = updateServiceDTO.name;
+    if (updateServiceDTO.title) data.title = updateServiceDTO.title;
+    if (updateServiceDTO.icon) data.icon = updateServiceDTO.icon;
     if (updateServiceDTO.description)
       data.description = updateServiceDTO.description;
     if (updateServiceDTO.details) data.details = updateServiceDTO.details;

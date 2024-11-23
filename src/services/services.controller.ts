@@ -10,8 +10,6 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { ServicesService } from './services.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -26,7 +24,6 @@ export class ServicesController {
 
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
-  @UsePipes(new ValidationPipe({ transform: true }))
   @Post('')
   async createService(
     @Request() request,
@@ -38,7 +35,6 @@ export class ServicesController {
 
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
-  @UsePipes(new ValidationPipe({ transform: true }))
   @Patch('')
   async updateService(
     @Request() request,
