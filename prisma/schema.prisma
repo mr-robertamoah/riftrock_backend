@@ -21,6 +21,62 @@ model User {
   lastName  String?
   otherNames  String?
   role Role @default(USER)
+  addedServices Service[]
+  addedProducts Product[]
+  addedFiles File[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Service {
+  id       Int   @id @default(autoincrement())
+  name String
+  description String? 
+  details  String?
+
+  userId    Int
+  user User @relation(fields: [userId], references: [id])
+
+  files File[] @relation(map: "File_Service_Relation")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt @default(now())
+}
+
+model Product {
+  id       Int   @id @default(autoincrement())
+  name String
+  description String? 
+  details  String?
+
+  userId    Int
+  user User @relation(fields: [userId], references: [id])
+
+  files File[] @relation(map: "File_Product_Relation")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model File {
+  id       Int   @id @default(autoincrement())
+  url String
+  description String?
+
+  morphId Int
+  morphType String
+
+  userId    Int
+  user User @relation(fields: [userId], references: [id])
+
+  service Service? @relation(fields: [morphId], references: [id], map: "File_Service_Relation")
+  product Product? @relation(fields: [morphId], references: [id], map: "File_Product_Relation")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([morphId, morphType])
 }
 
 enum Role {

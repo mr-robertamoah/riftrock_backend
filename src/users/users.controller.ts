@@ -7,8 +7,6 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
-  // TODO implement make admin
-  // TODO implement unmake admin
 
   @UseGuards(JwtAuthGuard)
   @Patch('make-admin')
