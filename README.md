@@ -42,6 +42,8 @@ The following environment variables are required:
 - `SECRET_KEY`
 - `PORT`
 - `AWS_BUCKET_NAME`
+- `ADMIN_EMAIL`
+- `ADMIN_PASSWORD`
 
 ---
 ## Features
