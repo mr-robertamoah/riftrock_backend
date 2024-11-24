@@ -2,6 +2,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  NotImplementedException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDTO } from 'src/dto/create-user.dto';
@@ -10,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { UpdateUserDTO } from 'src/dto/update-user.dto';
 import { MakeAdminDTO } from 'src/dto/make-admin.dto';
 import { User } from '@prisma/client';
+import { CreateAnotherUserDTO } from 'src/dto/create-another-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -33,6 +35,36 @@ export class UsersService {
     });
 
     delete user.password;
+
+    return user;
+  }
+
+  async createAnotherUser(
+    user,
+    createUserDTO: CreateAnotherUserDTO,
+  ): Promise<User> {
+    user = await this.prisma.user.findFirst({
+      where: { id: Number(user.userId) },
+    });
+
+    if (user.role == 'USER')
+      throw new ForbiddenException('You cannot create another user account.');
+
+    let otherUser = await this.findUserByEmail(createUserDTO.email);
+
+    if (otherUser)
+      throw new UnauthorizedException('Email has already been used.');
+
+    if (createUserDTO.password !== createUserDTO.passwordConfirmation)
+      throw new ForbiddenException('Password confirmation failed.');
+
+    const data = new CreateUserDTO();
+    data.email = createUserDTO.email;
+    data.password = createUserDTO.password;
+
+    otherUser = await this.createUser(data);
+
+    if (!otherUser) throw new NotImplementedException('User creation failed.');
 
     return user;
   }
