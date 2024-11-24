@@ -1,99 +1,109 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# RiftRock Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This is a NestJS-based application featuring authentication, file management, and various service modules. It integrates with Prisma for database management and AWS S3 for file storage.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Table of Contents
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [RiftRock Backend](#riftrock-backend)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Environment Variables](#environment-variables)
+  - [Features](#features)
+  - [Routes](#routes)
+    - [Authentication Routes](#authentication-routes)
+    - [User Management Routes](#user-management-routes)
+    - [Service Management Routes](#service-management-routes)
+    - [Contact Management Routes](#contact-management-routes)
+    - [Details Management Routes](#details-management-routes)
+  - [Technologies Used](#technologies-used)
+  - [Notes](#notes)
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+## Installation
 
-## Compile and run the project
+1. Clone the repository:
+   ```bash
+  git clone <repository-url>
+  npm install
+  npx prisma migrate dev
+  npm run start
+  ```
 
-```bash
-# development
-$ npm run start
+---
+## Environment Variables
+The following environment variables are required:
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION`
+- `DATABASE_URL`
+- `SECRET_KEY`
+- `PORT`
+- `AWS_BUCKET_NAME`
 
-# watch mode
-$ npm run start:dev
+---
+## Features
+- Authentication: User registration, login, and password reset.
+- Role Management: Assign admin or user roles.
+- User Management: User profile management, including profile creation and update.
+- File Management: Upload and manage files on AWS S3.
+- Service Management: Service creation, update, and deletion.
+- Contact Management: Contact creation, update, and deletion.
+  - Details Management: Details creation, update, and deletion.
 
-# production mode
-$ npm run start:prod
-```
+---
+## Routes
+### Authentication Routes
+| Method | Path | Description |
+| --- | --- | --- |
+| POST | /auth/login | Log in with email and password. |
+| POST | /login | Register a new user. |
+| GET | /auth/register | Retrieve the currently logged-in user. |
+| POST | /auth/logout | Log out the current user. |
+### User Management Routes
+| Method | Path | Description |
+| --- | --- | --- |
+| PATCH | /users/make-admin | Assign admin role to a user. |
+| PATCH | /users/make-user | Revoke admin role from a user. |
+| POST | /users | Create a new user |
+| PATCH | /users/update | Update an existing user's details. |
+### Service Management Routes
+| Method | Path | Description |
+| --- | --- | --- |
+| POST | /services | Create a new service |
+| PATCH | /services/:id | Update a service |
+| GET | /services | Retrieve all services (with pagination). |
+| DELETE | /services/:id | Delete a service |
+### Contact Management Routes
+| Method | Path | Description |
+| --- | --- | --- |
+| POST | /contacts | Create a new contact |
+| PATCH | /contacts/:id | Update a contact |
+| GET | /contacts | Retrieve all contacts. |
+| DELETE | /contacts/:id | Delete a contact |
+### Details Management Routes
+| Method | Path | Description |
+| --- | --- | --- |
+| POST | /details | Create a new detail |
+| PATCH | /details/:id | Update a detail |
+| GET | /details | Retrieve all details. |
+| DELETE | /details/:id | Delete a detail |
 
-## Run tests
+---
+## Technologies Used
+* NestJS: Backend framework for building scalable applications.
+* Prisma: ORM for database management.
+* AWS S3: File storage.
+* JWT: Authentication and authorization
+* Passport.js (for authentication)
+* Bcrypt (for password hashing)
+* PostgreSQL/MySQL: Database (configurable via .env).
 
-```bash
-# unit tests
-$ npm run test
+---
+## Notes
+* The application uses pagination for routes like /services to handle large datasets efficiently.
+* For file upload functionality, ensure your AWS S3 bucket is configured correctly, and the environment variables are set.
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Feel free to reach out with questions or suggestions! 😊
