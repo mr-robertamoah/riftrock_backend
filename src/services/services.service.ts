@@ -55,16 +55,17 @@ export class ServicesService {
 
   async update(
     user,
+    serviceId: number,
     updateServiceDTO: UpdateServiceDTO,
     uploadedFile: Express.Multer.File,
   ) {
     let service = await this.prisma.service.findFirst({
-      where: { id: Number(updateServiceDTO.serviceId) },
+      where: { id: Number(serviceId) },
     });
 
     if (!service) throw new NotFoundException('Service not found.');
 
-    if (service.userId != user.id)
+    if (service.userId != user.userId)
       throw new ForbiddenException(
         'You do not have permission to update this service.',
       );
@@ -92,7 +93,7 @@ export class ServicesService {
 
     if (Object.keys(data).length > 0) {
       service = await this.prisma.service.update({
-        where: { id: Number(updateServiceDTO.serviceId) },
+        where: { id: service.id },
         data: data,
         include: { files: true },
       });
@@ -130,7 +131,7 @@ export class ServicesService {
 
     if (!service) throw new NotFoundException('Service not found.');
 
-    if (service.userId != user.id)
+    if (service.userId != user.userId)
       throw new ForbiddenException(
         'You do not have permission to delete this service.',
       );

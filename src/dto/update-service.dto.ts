@@ -5,5 +5,4 @@ export class UpdateServiceDTO {
   details: string | null;
   file: File | null;
   fileDescription: string | null;
-  serviceId: number;
 }

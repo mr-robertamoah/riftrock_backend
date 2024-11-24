@@ -37,13 +37,19 @@ export class ServicesController {
 
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
-  @Patch('')
+  @Patch(':id')
   async updateService(
     @Request() request,
     @Body() updateServiceDTO: UpdateServiceDTO,
+    @Param('id', ParseIntToNotFoundPipe) id: number,
     @UploadedFile() file: Express.Multer.File | null,
   ) {
-    return this.servicesService.update(request.user, updateServiceDTO, file);
+    return this.servicesService.update(
+      request.user,
+      id,
+      updateServiceDTO,
+      file,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
