@@ -9,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LoginDTO } from 'src/dto/login.dto';
 import { UsersService } from 'src/users/users.service';
@@ -41,9 +40,9 @@ export class AuthController {
     return await this.usersService.findUserByEmail(request.user.email);
   }
 
-  @UseGuards(LocalAuthGuard)
-  @Get('logout')
-  async signOut(@Request() request) {
-    return request.logout();
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async signOut() {
+    return { success: true, message: 'Logged out successfully.' };
   }
 }
