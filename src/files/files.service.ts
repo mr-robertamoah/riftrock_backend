@@ -23,7 +23,7 @@ export class FilesService {
 
     const file = await this.prisma.file.create({
       data: {
-        userId: user.id,
+        userId: Number(user.userId),
         url: s3Result.url,
         key: s3Result.key,
         description: fileDetails.fileDescription,

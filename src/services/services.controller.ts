@@ -18,6 +18,7 @@ import { CreateServiceDTO } from 'src/dto/create-service.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateServiceDTO } from 'src/dto/update-service.dto';
 import { GetItemsDTO } from 'src/dto/get-items.dto';
+import { ParseIntToNotFoundPipe } from 'src/pipes/parse-int-to-not-found-pipe';
 
 @Controller('services')
 export class ServicesController {
@@ -47,7 +48,10 @@ export class ServicesController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteService(@Request() request, @Param('id') id: number) {
+  async deleteService(
+    @Request() request,
+    @Param('id', ParseIntToNotFoundPipe) id: number,
+  ) {
     return this.servicesService.delete(request.user, Number(id));
   }
 

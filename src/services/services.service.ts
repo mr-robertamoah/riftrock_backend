@@ -26,7 +26,7 @@ export class ServicesService {
   ) {
     const service = await this.prisma.service.create({
       data: {
-        userId: user.id,
+        userId: Number(user.userId),
         title: createServiceDTO.title,
         icon: createServiceDTO.icon,
         description: createServiceDTO.description,

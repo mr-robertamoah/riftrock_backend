@@ -14,6 +14,7 @@ import { CreateContactDTO } from 'src/dto/create-contact.dto';
 import { ContactsService } from './contacts.service';
 import { GetItemsDTO } from 'src/dto/get-items.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ParseIntToNotFoundPipe } from 'src/pipes/parse-int-to-not-found-pipe';
 
 @Controller('contacts')
 export class ContactsController {
@@ -26,13 +27,19 @@ export class ContactsController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  async markContact(@Request() request, @Param('id') id: number) {
+  async markContact(
+    @Request() request,
+    @Param('id', ParseIntToNotFoundPipe) id: number,
+  ) {
     return await this.contactsService.mark(request.user, Number(id));
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteContact(@Request() request, @Param('id') id: number) {
+  async deleteContact(
+    @Request() request,
+    @Param('id', ParseIntToNotFoundPipe) id: number,
+  ) {
     return await this.contactsService.delete(request.user, Number(id));
   }
 

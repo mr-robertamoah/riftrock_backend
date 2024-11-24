@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   NotImplementedException,
@@ -28,7 +29,7 @@ export class DetailsService {
 
     return await this.prisma.detail.create({
       data: {
-        userId: Number(user.id),
+        userId: Number(user.userId),
         key: addDetailDTO.key,
         value: JSON.parse(addDetailDTO.value),
       },
@@ -36,19 +37,25 @@ export class DetailsService {
   }
 
   async update(user, detailId, updateDetailDTO: UpdateDetailDTO) {
-    user = await this.prisma.user.findFirst({
-      where: { id: Number(user.id) },
-    });
+    let detail = null;
+    try {
+      user = await this.prisma.user.findFirst({
+        where: { id: Number(user.userId) },
+      });
 
-    const detail = await this.prisma.detail.findFirst({
-      where: { id: Number(detailId) },
-    });
+      detail = await this.prisma.detail.findFirst({
+        where: { id: Number(detailId) },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Something unfortunate happened.');
+    }
 
     if (!detail) throw new NotFoundException('Detail not found');
 
     if (
       user.id != detail.userId ||
-      ['ADMIN', 'SUPER_ADMIN'].includes(user.role)
+      !['ADMIN', 'SUPER_ADMIN'].includes(user.role)
     )
       throw new UnauthorizedException('You cannot update this detail.');
 
@@ -61,19 +68,25 @@ export class DetailsService {
   }
 
   async delete(user, detailId) {
-    user = await this.prisma.user.findFirst({
-      where: { id: Number(user.id) },
-    });
+    let detail = null;
+    try {
+      user = await this.prisma.user.findFirst({
+        where: { id: Number(user.userId) },
+      });
 
-    const detail = await this.prisma.detail.findFirst({
-      where: { id: Number(detailId) },
-    });
+      detail = await this.prisma.detail.findFirst({
+        where: { id: Number(detailId) },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Something unfortunate happened.');
+    }
 
     if (!detail) throw new NotFoundException('Detail not found');
 
     if (
       user.id != detail.userId ||
-      ['ADMIN', 'SUPER_ADMIN'].includes(user.role)
+      !['ADMIN', 'SUPER_ADMIN'].includes(user.role)
     )
       throw new UnauthorizedException('You cannot delete this detail.');
 
@@ -82,5 +95,9 @@ export class DetailsService {
     });
 
     return { success: true };
+  }
+
+  async get() {
+    return await this.prisma.detail.findMany();
   }
 }

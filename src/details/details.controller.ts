@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
   Post,
@@ -12,6 +13,7 @@ import { DetailsService } from './details.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AddDetailDTO } from 'src/dto/add-detail.dto';
 import { UpdateDetailDTO } from 'src/dto/update-detail.dto';
+import { ParseIntToNotFoundPipe } from 'src/pipes/parse-int-to-not-found-pipe';
 
 @Controller('details')
 export class DetailsController {
@@ -27,7 +29,7 @@ export class DetailsController {
   @Patch(':id')
   async updateDetail(
     @Request() request,
-    @Param('id') id: number,
+    @Param('id', ParseIntToNotFoundPipe) id: number,
     @Body() updateDetailDTO: UpdateDetailDTO,
   ) {
     return await this.detailsService.update(request.user, id, updateDetailDTO);
@@ -35,7 +37,15 @@ export class DetailsController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteDetail(@Request() request, @Param('id') id: number) {
+  async deleteDetail(
+    @Request() request,
+    @Param('id', ParseIntToNotFoundPipe) id: number,
+  ) {
     return await this.detailsService.delete(request.user, id);
+  }
+
+  @Get()
+  async getDetails() {
+    return await this.detailsService.get();
   }
 }
