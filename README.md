@@ -25,12 +25,12 @@ This is a NestJS-based application featuring authentication, file management, an
 ## Installation
 
 1. Clone the repository:
-   ```bash
+```bash
   git clone <repository-url>
   npm install
   npx prisma migrate dev
   npm run start
-  ```
+```
 
 ---
 ## Environment Variables
