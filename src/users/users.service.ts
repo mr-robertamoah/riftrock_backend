@@ -45,7 +45,7 @@ export class UsersService {
         take,
         skip,
         orderBy: { createdAt: 'desc' },
-        where: { NOT: { id: Number(user.userId) } },
+        where: { NOT: { id: Number(user.id) } },
       }),
       this.prisma.service.count(),
     ]);
