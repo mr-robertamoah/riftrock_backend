@@ -31,15 +31,25 @@ const services = [
 ];
 
 async function main() {
-  const user = await prisma.user.create({
-    data: {
+  let user = await prisma.user.findFirst({
+    where: {
       email: process.env.ADMIN_EMAIL ?? 'mr_robertamoah@yahoo.com',
-      password: await bcryt.hash(process.env.ADMIN_PASSWORD ?? 'password', 10),
-      firstName: 'Robert',
-      lastName: 'Amoah',
-      role: 'SUPER_ADMIN',
     },
   });
+
+  if (!user)
+    user = await prisma.user.create({
+      data: {
+        email: process.env.ADMIN_EMAIL ?? 'mr_robertamoah@yahoo.com',
+        password: await bcryt.hash(
+          process.env.ADMIN_PASSWORD ?? 'password',
+          10,
+        ),
+        firstName: 'Robert',
+        lastName: 'Amoah',
+        role: 'SUPER_ADMIN',
+      },
+    });
 
   await prisma.service.createMany({
     data: services.map((service) => ({ ...service, userId: user.id })),
