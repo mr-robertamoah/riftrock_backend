@@ -12,6 +12,7 @@ import { UpdateUserDTO } from 'src/dto/update-user.dto';
 import { MakeAdminDTO } from 'src/dto/make-admin.dto';
 import { User } from '@prisma/client';
 import { CreateAnotherUserDTO } from 'src/dto/create-another-user.dto';
+import { GetItemsDTO } from 'src/dto/get-items.dto';
 
 @Injectable()
 export class UsersService {
@@ -25,6 +26,39 @@ export class UsersService {
     if (!user) return null;
 
     return user;
+  }
+
+  async getUsers(user, getUsersDTO: GetItemsDTO) {
+    user = await this.prisma.user.findUnique({
+      where: { id: Number(user.userId) },
+    });
+
+    if (user.role == 'USER') return [];
+
+    const limit = getUsersDTO.limit ? Number(getUsersDTO.limit) : 10;
+    const page = getUsersDTO.page ? Number(getUsersDTO.page) : 1;
+    const take = limit;
+    const skip = (page - 1) * take;
+
+    const [users, total] = await Promise.all([
+      this.prisma.user.findMany({
+        take,
+        skip,
+        orderBy: { createdAt: 'desc' },
+        where: { NOT: { id: Number(user.userId) } },
+      }),
+      this.prisma.service.count(),
+    ]);
+
+    return {
+      data: users,
+      meta: {
+        total,
+        page,
+        limit,
+        lastPage: Math.ceil(total / limit),
+      },
+    };
   }
 
   async createUser(createUserDTO: CreateUserDTO): Promise<User> {
