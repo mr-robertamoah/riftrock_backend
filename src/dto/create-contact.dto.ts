@@ -1,12 +1,12 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateContactDTO {
-  @IsOptional()
-  @IsEmail()
-  email?: string;
   @IsNotEmpty()
+  @IsEmail()
+  email: string;
+  @IsOptional()
   @IsString()
-  name: string;
+  name?: string;
   @IsNotEmpty()
   @IsString()
   message: string;
