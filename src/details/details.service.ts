@@ -9,7 +9,7 @@ import { AddDetailDTO } from 'src/dto/add-detail.dto';
 import { UpdateDetailDTO } from 'src/dto/update-detail.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
-const detailsKeys = {
+export const detailsKeys = {
   tagline: 'TAGLINE',
   taglineMessage: 'TAGLINE_MESSAGE',
   taglineShort: 'TAGLINE_SHORT',

@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcryt from 'bcrypt';
+import { detailsKeys } from 'src/details/details.service';
 
 const prisma = new PrismaClient();
 
@@ -30,6 +31,59 @@ const services = [
   },
 ];
 
+const details = [
+  {
+    key: detailsKeys.tagline,
+    value: {
+      gold: 'Empowering Mining Excellence',
+      black: 'through Reliable Services',
+    },
+  },
+  {
+    key: detailsKeys.taglineShort,
+    value: {
+      message:
+        'Leading the industry with innovative solutions and sustainable practices',
+    },
+  },
+  {
+    key: detailsKeys.taglineMessage,
+    value: {
+      message:
+        'RiftRock is a leading provider of comprehensive mining services, dedicated to delivering exceptional support to the mining industry. Our expertise spans general consumables, transportation, and rental equipment, ensuring seamless operations for our clients.',
+    },
+  },
+  {
+    key: detailsKeys.mission,
+    value: {
+      message:
+        'To provide top-notch mining services, fostering long-term partnerships with our clients, while prioritizing safety, efficiency, and sustainability.',
+    },
+  },
+  {
+    key: detailsKeys.vision,
+    value: {
+      message:
+        'To become the preferred mining services partner in [Region/Industry], recognized for our commitment to excellence, innovation, and customer satisfaction.',
+    },
+  },
+  {
+    key: detailsKeys.contactMessage,
+    value: {
+      message:
+        'Ready to start your next mining project? Contact us today for expert consultation',
+      tagline: 'Get in touch with us',
+    },
+  },
+  {
+    key: detailsKeys.servicesMessage,
+    value: {
+      message:
+        'Comprehensive mining solutions tailored to meet your specific needs',
+    },
+  },
+];
+
 async function main() {
   let user = await prisma.user.findFirst({
     where: {
@@ -51,9 +105,15 @@ async function main() {
       },
     });
 
-  await prisma.service.createMany({
-    data: services.map((service) => ({ ...service, userId: user.id })),
-  });
+  if (!(await prisma.service.findFirst({ where: { userId: user.id } })))
+    await prisma.service.createMany({
+      data: services.map((service) => ({ ...service, userId: user.id })),
+    });
+
+  if (!(await prisma.detail.findFirst({ where: { userId: user.id } })))
+    await prisma.detail.createMany({
+      data: details.map((detail) => ({ ...detail, userId: user.id })),
+    });
 }
 
 main()
