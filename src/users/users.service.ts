@@ -13,6 +13,7 @@ import { MakeAdminDTO } from 'src/dto/make-admin.dto';
 import { User } from '@prisma/client';
 import { CreateAnotherUserDTO } from 'src/dto/create-another-user.dto';
 import { GetItemsDTO } from 'src/dto/get-items.dto';
+import { UpdateAnotherUserDTO } from 'src/dto/update-another-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -73,6 +74,101 @@ export class UsersService {
     return user;
   }
 
+  async updateAnotherUser(
+    user,
+    otherUserId: number,
+    updateUserDTO: UpdateAnotherUserDTO,
+  ): Promise<User> {
+    user = await this.prisma.user.findFirst({
+      where: { id: Number(user.userId) },
+    });
+
+    if (user.role == 'USER')
+      throw new ForbiddenException("You cannot update another user's account.");
+
+    if (
+      updateUserDTO.email &&
+      (await this.findUserByEmail(updateUserDTO.email))
+    )
+      throw new ForbiddenException('Email has already been taken.');
+
+    let otherUser = await this.prisma.user.findFirst({
+      where: { id: otherUserId },
+    });
+
+    if (otherUser)
+      throw new UnauthorizedException('User account does not exist.');
+
+    if (
+      user.role !== 'SUPER_ADMIN' &&
+      !(user.role == 'ADMIN' && otherUser.role == 'USER')
+    )
+      throw new ForbiddenException("You cannot update another user's account.");
+
+    if (
+      !!updateUserDTO.password &&
+      updateUserDTO.password !== updateUserDTO.passwordConfirmation
+    )
+      throw new ForbiddenException('Password confirmation failed.');
+
+    const data = {
+      password: !!updateUserDTO.password
+        ? await bcrypt.hash(updateUserDTO.password, 10)
+        : otherUser.password,
+      email: updateUserDTO.email ?? otherUser.email,
+      firstName: updateUserDTO.firstName ?? otherUser.firstName,
+      lastName: updateUserDTO.lastName ?? otherUser.lastName,
+      otherNames: updateUserDTO.otherNames ?? otherUser.email,
+    };
+
+    try {
+      otherUser = await this.prisma.user.update({
+        where: { id: otherUser.id },
+        data,
+      });
+
+      delete otherUser.password;
+    } catch (error) {
+      console.log(error);
+      throw new NotImplementedException('User update failed.');
+    }
+
+    return otherUser;
+  }
+
+  async deleteAnotherUser(user, otherUserId: number) {
+    user = await this.prisma.user.findFirst({
+      where: { id: Number(user.userId) },
+    });
+
+    if (user.role == 'USER')
+      throw new ForbiddenException("You cannot delete another user's account.");
+
+    const otherUser = await this.prisma.user.findFirst({
+      where: { id: otherUserId },
+    });
+
+    if (otherUser)
+      throw new UnauthorizedException('User account does not exist.');
+
+    if (
+      user.role !== 'SUPER_ADMIN' &&
+      !(user.role == 'ADMIN' && otherUser.role == 'USER')
+    )
+      throw new ForbiddenException("You cannot delete another user's account.");
+
+    try {
+      await this.prisma.user.delete({
+        where: { id: otherUser.id },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new NotImplementedException('User account deletion failed.');
+    }
+
+    return { success: true };
+  }
+
   async createAnotherUser(
     user,
     createUserDTO: CreateAnotherUserDTO,
@@ -100,7 +196,7 @@ export class UsersService {
 
     if (!otherUser) throw new NotImplementedException('User creation failed.');
 
-    return user;
+    return otherUser;
   }
 
   async makeAdmin(admin, makeAdminDTO: MakeAdminDTO): Promise<User> {
