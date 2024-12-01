@@ -47,6 +47,16 @@ export class UsersService {
         skip,
         orderBy: { createdAt: 'desc' },
         where: { NOT: { id: Number(user.id) } },
+        select: {
+          id: true,
+          role: true,
+          firstName: true,
+          lastName: true,
+          otherNames: true,
+          email: true,
+          createdAt: true,
+          password: false,
+        },
       }),
       this.prisma.service.count(),
     ]);
@@ -96,7 +106,7 @@ export class UsersService {
       where: { id: otherUserId },
     });
 
-    if (otherUser)
+    if (!otherUser)
       throw new UnauthorizedException('User account does not exist.');
 
     if (
@@ -118,7 +128,7 @@ export class UsersService {
       email: updateUserDTO.email ?? otherUser.email,
       firstName: updateUserDTO.firstName ?? otherUser.firstName,
       lastName: updateUserDTO.lastName ?? otherUser.lastName,
-      otherNames: updateUserDTO.otherNames ?? otherUser.email,
+      otherNames: updateUserDTO.otherNames ?? otherUser.otherNames,
     };
 
     try {
@@ -148,7 +158,7 @@ export class UsersService {
       where: { id: otherUserId },
     });
 
-    if (otherUser)
+    if (!otherUser)
       throw new UnauthorizedException('User account does not exist.');
 
     if (

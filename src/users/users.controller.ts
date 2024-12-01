@@ -62,7 +62,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete()
+  @Delete(':id')
   async deleteAnotherUser(
     @Request() request,
     @Param('id', ParseIntPipe) id: number,
