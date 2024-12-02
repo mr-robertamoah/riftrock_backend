@@ -89,6 +89,16 @@ model Detail {
   updatedAt DateTime @updatedAt
 }
 
+model Email {
+  id       Int   @id @default(autoincrement())
+  sender String
+  recepient String
+  subject String
+  body String
+
+  createdAt DateTime @default(now())
+}
+
 model File {
   id       Int   @id @default(autoincrement())
   url String
