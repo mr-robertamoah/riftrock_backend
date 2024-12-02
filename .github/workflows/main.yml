@@ -24,5 +24,5 @@ jobs:
           aws ssm send-command \
             --instance-ids ${{ secrets.AWS_INSTANCE_ID }} \
             --document-name "AWS-RunShellScript" \
-            --parameters 'commands=["sudo -u ubuntu /bin/bash -c \"cd /var/www/riftrock_backend && git pull https://${{ secrets.RIFTROCK_PAT }}@github.com/mr-robertamoah/riftrock_backend.git main && npm install && npm run build && pm2 delete all || true && pm2 start dist/src/main.js --name riftrock_backend --time -f\""]' \
+            --parameters 'commands=["sudo -u ubuntu /bin/bash -c \"cd /var/www/riftrock_backend && git pull https://${{ secrets.RIFTROCK_PAT }}@github.com/mr-robertamoah/riftrock_backend.git main && npm install && npm run build && pm2 stop all && pm2 delete all && pm2 start dist/src/main.js --name riftrock_backend --instances 1 && pm2 save\""]' \
             --comment "Deploying RicfRock backend app"
