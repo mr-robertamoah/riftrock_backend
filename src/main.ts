@@ -2,11 +2,23 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as bodyParser from 'body-parser';
+console.log(process.env.CORS);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const allowedOrigins = (
+    process.env.ALLOWED_ORIGINS || 'http://localhost:5173'
+  ).split(',');
+
   app.enableCors({
-    origin: 'http://localhost:5173', // http://localhost:3000
+    origin: (origin, callback) => {
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   });
 
