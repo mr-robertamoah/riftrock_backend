@@ -5,9 +5,9 @@ import {
   NotImplementedException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AddDetailDTO } from 'src/dto/add-detail.dto';
-import { UpdateDetailDTO } from 'src/dto/update-detail.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { AddDetailDTO } from '../../src/dto/add-detail.dto';
+import { UpdateDetailDTO } from '../../src/dto/update-detail.dto';
+import { PrismaService } from '../../src/prisma/prisma.service';
 
 export const detailsKeys = {
   tagline: 'TAGLINE',

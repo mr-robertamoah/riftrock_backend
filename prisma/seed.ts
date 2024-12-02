@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcryt from 'bcrypt';
-import { detailsKeys } from 'src/details/details.service';
+import { detailsKeys } from '../src/details/details.service';
 
 const prisma = new PrismaClient();
 
@@ -38,6 +38,7 @@ const details = [
       gold: 'Empowering Mining Excellence',
       black: 'through Reliable Services',
     },
+    info: 'The gold section represents gold portion of the tagline. Same applies to the black',
   },
   {
     key: detailsKeys.taglineShort,
@@ -45,6 +46,7 @@ const details = [
       message:
         'Leading the industry with innovative solutions and sustainable practices',
     },
+    info: 'This is the text that appears under the tagline on the Hero/Main section of the Home page.',
   },
   {
     key: detailsKeys.taglineMessage,
@@ -52,6 +54,7 @@ const details = [
       message:
         'RiftRock is a leading provider of comprehensive mining services, dedicated to delivering exceptional support to the mining industry. Our expertise spans general consumables, transportation, and rental equipment, ensuring seamless operations for our clients.',
     },
+    info: 'This represents the text which appears under the tagline in the About section of the Home page.',
   },
   {
     key: detailsKeys.mission,
@@ -74,6 +77,7 @@ const details = [
         'Ready to start your next mining project? Contact us today for expert consultation',
       tagline: 'Get in touch with us',
     },
+    info: 'The tagline represents the text which appears immediately under the Contact header on the Contact section of the Home page. The message follows after the contact tagline',
   },
   {
     key: detailsKeys.servicesMessage,
@@ -81,6 +85,7 @@ const details = [
       message:
         'Comprehensive mining solutions tailored to meet your specific needs',
     },
+    info: 'This represents the text which appears under the Services header on the Services section of the Home page.',
   },
 ];
 

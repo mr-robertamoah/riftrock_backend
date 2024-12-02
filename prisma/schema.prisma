@@ -80,6 +80,7 @@ model Detail {
   id       Int   @id @default(autoincrement())
   key String
   value Json
+  info String?
 
   userId    Int
   user User @relation(fields: [userId], references: [id])
