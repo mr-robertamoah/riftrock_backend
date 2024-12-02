@@ -58,7 +58,7 @@ export class UsersService {
           password: false,
         },
       }),
-      this.prisma.service.count(),
+      this.prisma.user.count(),
     ]);
 
     return {
