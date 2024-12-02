@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { GetItemsDTO } from 'src/dto/get-items.dto';
 import { MailgunDTO } from 'src/dto/mailgun.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -20,6 +24,28 @@ export class EmailsService {
     });
 
     return { success: true };
+  }
+
+  async markEmail(user, emailId: number) {
+    user = await this.prisma.user.findUnique({ where: { id: user.userId } });
+
+    if (user.role === 'admin')
+      throw new UnauthorizedException('You cannot mark emails as read');
+
+    let email = await this.prisma.email.findUnique({
+      where: { id: emailId },
+    });
+
+    if (!email) throw new NotFoundException('Email was not found.');
+
+    email = await this.prisma.email.update({
+      where: { id: email.id },
+      data: {
+        read: true,
+      },
+    });
+
+    return email;
   }
 
   async get(getEmailsDTO: GetItemsDTO) {

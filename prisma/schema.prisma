@@ -95,6 +95,7 @@ model Email {
   recepient String
   subject String
   body String
+  read Boolean @default(false)
 
   createdAt DateTime @default(now())
 }
