@@ -22,7 +22,11 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));

@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, NotImplementedException, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotImplementedException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as bcryt from 'bcrypt';
@@ -15,6 +20,7 @@ export class AuthService {
   ) {}
 
   async signIn(loginDTO: LoginDTO) {
+    console.log(loginDTO);
     const user = await this.validateUser(loginDTO.email, loginDTO.password);
 
     if (!user) throw new UnauthorizedException();
@@ -53,6 +59,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<User> {
     const user = await this.usersService.findUserByEmail(email);
+    console.log(password, user.password);
     if (user && (await bcryt.compare(password, user.password))) {
       delete user.password;
 

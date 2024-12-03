@@ -146,6 +146,75 @@ export class UsersService {
     return otherUser;
   }
 
+  async updatePassword(
+    user,
+    updateUserDTO: UpdateAnotherUserDTO,
+  ): Promise<User> {
+    user = await this.prisma.user.findFirst({
+      where: { id: Number(user.userId) },
+    });
+
+    if (!updateUserDTO.password)
+      throw new ForbiddenException('Password is required.');
+
+    if (
+      !!updateUserDTO.password &&
+      updateUserDTO.password !== updateUserDTO.passwordConfirmation
+    )
+      throw new ForbiddenException('Password confirmation failed.');
+
+    const data = {
+      password: await bcrypt.hash(updateUserDTO.password, 10),
+    };
+
+    try {
+      user = await this.prisma.user.update({
+        where: { id: user.id },
+        data,
+      });
+
+      delete user.password;
+    } catch (error) {
+      console.log(error);
+      throw new NotImplementedException('User update failed.');
+    }
+
+    return user;
+  }
+
+  async update(user, updateUserDTO: UpdateAnotherUserDTO): Promise<User> {
+    user = await this.prisma.user.findFirst({
+      where: { id: Number(user.userId) },
+    });
+
+    if (
+      !updateUserDTO.firstName &&
+      !updateUserDTO.lastName &&
+      !updateUserDTO.otherNames
+    )
+      throw new ForbiddenException('At least one field must be updated.');
+
+    const data = {
+      firstName: updateUserDTO.firstName ?? user.firstName,
+      lastName: updateUserDTO.lastName ?? user.lastName,
+      otherNames: updateUserDTO.otherNames ?? user.otherNames,
+    };
+
+    try {
+      user = await this.prisma.user.update({
+        where: { id: user.id },
+        data,
+      });
+
+      delete user.password;
+    } catch (error) {
+      console.log(error);
+      throw new NotImplementedException('User update failed.');
+    }
+
+    return user;
+  }
+
   async deleteAnotherUser(user, otherUserId: number) {
     user = await this.prisma.user.findFirst({
       where: { id: Number(user.userId) },

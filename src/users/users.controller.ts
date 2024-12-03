@@ -48,6 +48,18 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Patch('password')
+  async updateUserPassword(
+    @Request() request,
+    @Body() updateAnotherUserDTO: UpdateAnotherUserDTO,
+  ) {
+    return await this.usersService.updatePassword(
+      request.user,
+      updateAnotherUserDTO,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async updateAnotherUser(
     @Request() request,
@@ -59,6 +71,15 @@ export class UsersController {
       id,
       updateAnotherUserDTO,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('')
+  async updateUser(
+    @Request() request,
+    @Body() updateAnotherUserDTO: UpdateAnotherUserDTO,
+  ) {
+    return await this.usersService.update(request.user, updateAnotherUserDTO);
   }
 
   @UseGuards(JwtAuthGuard)
