@@ -139,7 +139,6 @@ export class UsersService {
 
       delete otherUser.password;
     } catch (error) {
-      console.log(error);
       throw new NotImplementedException('User update failed.');
     }
 
@@ -175,7 +174,6 @@ export class UsersService {
 
       delete user.password;
     } catch (error) {
-      console.log(error);
       throw new NotImplementedException('User update failed.');
     }
 
@@ -208,7 +206,6 @@ export class UsersService {
 
       delete user.password;
     } catch (error) {
-      console.log(error);
       throw new NotImplementedException('User update failed.');
     }
 
@@ -241,7 +238,6 @@ export class UsersService {
         where: { id: otherUser.id },
       });
     } catch (error) {
-      console.log(error);
       throw new NotImplementedException('User account deletion failed.');
     }
 

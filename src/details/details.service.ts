@@ -47,7 +47,6 @@ export class DetailsService {
         where: { id: Number(detailId) },
       });
     } catch (error) {
-      console.log(error);
       throw new BadRequestException('Something unfortunate happened.');
     }
 
@@ -78,7 +77,6 @@ export class DetailsService {
         where: { id: Number(detailId) },
       });
     } catch (error) {
-      console.log(error);
       throw new BadRequestException('Something unfortunate happened.');
     }
 
