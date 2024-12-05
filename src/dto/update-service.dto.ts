@@ -5,4 +5,5 @@ export class UpdateServiceDTO {
   details: string | null;
   file: File | null;
   fileDescription: string | null;
+  deletedFileId: number | null;
 }

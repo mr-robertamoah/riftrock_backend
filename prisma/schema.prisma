@@ -14,111 +14,132 @@ datasource db {
 }
 
 model User {
-  id       Int   @id @default(autoincrement())
-  email    String   @unique
-  password String
-  firstName String? 
-  lastName  String?
-  otherNames  String?
-  role Role @default(USER)
-  addedServices Service[]
-  addedProducts Product[]
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  password       String
+  firstName      String?
+  lastName       String?
+  otherNames     String?
+  role           Role      @default(USER)
+  addedServices  Service[]
+  addedProducts  Product[]
   markedContacts Contact[]
-  addedDetails Detail[]
-  addedFiles File[]
+  addedDetails   Detail[]
+  addedFiles     File[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Service {
-  id       Int   @id @default(autoincrement())
-  title String
-  description String? 
-  details  String?
-  icon  String?
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  details     String?
+  icon        String?
 
-  userId    Int
-  user User @relation(fields: [userId], references: [id])
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 
-  files File[] @relation(map: "File_Service_Relation")
+  serviceFiles ServiceFile[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime? @updatedAt @default(now())
+  // virtual relationship
+  // files File[] @relation("ServiceFileToFile")
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt
 }
 
 model Product {
-  id       Int   @id @default(autoincrement())
-  title String
-  description String? 
-  details  String?
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  details     String?
 
-  userId    Int
-  user User @relation(fields: [userId], references: [id])
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 
-  files File[] @relation(map: "File_Product_Relation")
+  productFiles ProductFile[]
+
+  // virtual relationship
+  // files File[] @relation("ProductFileToFile")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Contact {
-  id       Int   @id @default(autoincrement())
-  name String?
-  email String 
-  message  String
-  seen  Boolean @default(false)
+  id      Int     @id @default(autoincrement())
+  name    String?
+  email   String
+  message String
+  seen    Boolean @default(false)
 
-  userId    Int?
-  user User? @relation(fields: [userId], references: [id])
+  userId Int?
+  user   User? @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Detail {
-  id       Int   @id @default(autoincrement())
-  key String
+  id    Int     @id @default(autoincrement())
+  key   String
   value Json
-  info String?
+  info  String?
 
-  userId    Int
-  user User @relation(fields: [userId], references: [id])
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Email {
-  id       Int   @id @default(autoincrement())
-  sender String
+  id        Int     @id @default(autoincrement())
+  sender    String
   recepient String
-  subject String
-  body String
-  read Boolean @default(false)
+  subject   String
+  body      String
+  read      Boolean @default(false)
 
   createdAt DateTime @default(now())
 }
 
 model File {
-  id       Int   @id @default(autoincrement())
-  url String
-  key String
+  id          Int     @id @default(autoincrement())
+  url         String
+  key         String
+  name         String
   description String?
 
-  morphId Int
-  morphType String
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 
-  userId    Int
-  user User @relation(fields: [userId], references: [id])
-
-  service Service? @relation(fields: [morphId], references: [id], map: "File_Service_Relation")
-  product Product? @relation(fields: [morphId], references: [id], map: "File_Product_Relation")
+  serviceFile ServiceFile[]
+  productFile ProductFile[]
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+}
 
-  @@index([morphId, morphType])
+model ServiceFile {
+  id Int @id @default(autoincrement())
+
+  serviceId Int
+  service   Service @relation(fields: [serviceId], references: [id])
+
+  fileId Int
+  file   File @relation(fields: [fileId], references: [id])
+}
+
+model ProductFile {
+  id Int @id @default(autoincrement())
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+
+  fileId Int
+  file   File @relation(fields: [fileId], references: [id])
 }
 
 enum Role {

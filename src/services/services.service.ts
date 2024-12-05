@@ -24,9 +24,10 @@ export class ServicesService {
     createServiceDTO: CreateServiceDTO,
     uploadedFile: Express.Multer.File,
   ) {
+    const userId = Number(user.userId);
     const service = await this.prisma.service.create({
       data: {
-        userId: Number(user.userId),
+        userId,
         title: createServiceDTO.title,
         icon: createServiceDTO.icon,
         description: createServiceDTO.description,
@@ -39,16 +40,24 @@ export class ServicesService {
 
     let file = null;
     if (uploadedFile) {
-      file = await this.filesService.uploadFile(user, {
+      file = await this.filesService.uploadFile({
         file: uploadedFile,
         fileDescription: createServiceDTO.fileDescription,
-        morphId: service.id,
-        morphType: 'Service',
+        userId,
       });
     }
 
     const result = { ...service, files: [] };
-    if (file) result.files = [file];
+    if (file) {
+      await this.prisma.serviceFile.create({
+        data: {
+          serviceId: service.id,
+          fileId: file.id,
+        },
+      });
+
+      result.files = [file];
+    }
 
     return result;
   }
@@ -95,30 +104,53 @@ export class ServicesService {
       service = await this.prisma.service.update({
         where: { id: service.id },
         data: data,
-        include: { files: true },
+        include: {
+          serviceFiles: { include: { file: true }, select: { file: true } },
+        },
       });
 
       if (!service)
         throw new NotImplementedException('Failed to update service.');
     }
 
-    let file = await this.prisma.file.findFirst({
-      where: { morphId: service.id, morphType: 'Service' },
+    const fileService = await this.prisma.serviceFile.findFirst({
+      where: { serviceId: service.id },
+      include: { file: true },
     });
 
-    if (uploadedFile && file) await this.filesService.deleteFile(file);
+    if (
+      fileService?.file &&
+      fileService.file.id == updateServiceDTO.deletedFileId
+    )
+      await this.filesService.deleteFile(fileService.file);
 
+    let file = null;
     if (uploadedFile) {
-      file = await this.filesService.uploadFile(user, {
+      file = await this.filesService.uploadFile({
         file: uploadedFile,
         fileDescription: updateServiceDTO.fileDescription,
-        morphId: service.id,
-        morphType: 'Service',
+        userId: Number(user.userId),
       });
     }
 
     const result = { ...service, files: [] };
-    if (file) result.files = [file];
+    if (file) {
+      if (fileService) {
+        await this.prisma.serviceFile.update({
+          where: { id: fileService.id },
+          data: { fileId: file.id },
+        });
+      } else {
+        await this.prisma.serviceFile.create({
+          data: {
+            serviceId: service.id,
+            fileId: file.id,
+          },
+        });
+      }
+
+      result.files = [file];
+    }
 
     return result;
   }
@@ -126,7 +158,7 @@ export class ServicesService {
   async delete(user, serviceId: number) {
     const service = await this.prisma.service.findFirst({
       where: { id: Number(serviceId) },
-      include: { files: true },
+      include: { serviceFiles: { include: { file: true } } },
     });
 
     if (!service) throw new NotFoundException('Service not found.');
@@ -136,8 +168,10 @@ export class ServicesService {
         'You do not have permission to delete this service.',
       );
 
-    if (service.files.length)
-      await this.filesService.deleteFile(service.files[0]);
+    if (service.serviceFiles.length) {
+      await this.filesService.deleteFile(service.serviceFiles[0].file);
+      await this.filesService.deleteServiceFile(service.serviceFiles[0]);
+    }
 
     await this.prisma.service.delete({
       where: { id: Number(serviceId) },
@@ -157,6 +191,15 @@ export class ServicesService {
         take,
         skip,
         orderBy: { createdAt: 'desc' },
+        include: {
+          serviceFiles: {
+            include: {
+              file: {
+                select: { id: true, url: true, name: true, description: true },
+              },
+            },
+          },
+        },
       }),
       this.prisma.service.count(),
     ]);
