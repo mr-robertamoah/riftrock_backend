@@ -86,14 +86,29 @@ CREATE TABLE `File` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `url` VARCHAR(191) NOT NULL,
     `key` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NULL,
-    `morphId` INTEGER NOT NULL,
-    `morphType` VARCHAR(191) NOT NULL,
     `userId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
 
-    INDEX `File_morphId_morphType_idx`(`morphId`, `morphType`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `ServiceFile` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `serviceId` INTEGER NOT NULL,
+    `fileId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `ProductFile` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `productId` INTEGER NOT NULL,
+    `fileId` INTEGER NOT NULL,
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -113,7 +128,13 @@ ALTER TABLE `Detail` ADD CONSTRAINT `Detail_userId_fkey` FOREIGN KEY (`userId`) 
 ALTER TABLE `File` ADD CONSTRAINT `File_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `File` ADD CONSTRAINT `File_Service_Relation` FOREIGN KEY (`morphId`) REFERENCES `Service`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ServiceFile` ADD CONSTRAINT `ServiceFile_serviceId_fkey` FOREIGN KEY (`serviceId`) REFERENCES `Service`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `File` ADD CONSTRAINT `File_Product_Relation` FOREIGN KEY (`morphId`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ServiceFile` ADD CONSTRAINT `ServiceFile_fileId_fkey` FOREIGN KEY (`fileId`) REFERENCES `File`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ProductFile` ADD CONSTRAINT `ProductFile_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ProductFile` ADD CONSTRAINT `ProductFile_fileId_fkey` FOREIGN KEY (`fileId`) REFERENCES `File`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
