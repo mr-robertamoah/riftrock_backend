@@ -83,6 +83,8 @@ export class ServicesService {
       !updateServiceDTO.title &&
       !updateServiceDTO.description &&
       !updateServiceDTO.details &&
+      !updateServiceDTO.icon &&
+      !updateServiceDTO.deletedFileId &&
       !uploadedFile
     )
       throw new NotImplementedException('Insufficient data to update service.');
@@ -105,7 +107,7 @@ export class ServicesService {
         where: { id: service.id },
         data: data,
         include: {
-          serviceFiles: { include: { file: true }, select: { file: true } },
+          serviceFiles: { include: { file: true } },
         },
       });
 
@@ -113,16 +115,17 @@ export class ServicesService {
         throw new NotImplementedException('Failed to update service.');
     }
 
-    const fileService = await this.prisma.serviceFile.findFirst({
+    const serviceFile = await this.prisma.serviceFile.findFirst({
       where: { serviceId: service.id },
       include: { file: true },
     });
 
     if (
-      fileService?.file &&
-      fileService.file.id == updateServiceDTO.deletedFileId
-    )
-      await this.filesService.deleteFile(fileService.file);
+      serviceFile?.file &&
+      (serviceFile.file.id == updateServiceDTO.deletedFileId || uploadedFile)
+    ) {
+      await this.filesService.deleteServiceFile(serviceFile);
+    }
 
     let file = null;
     if (uploadedFile) {
@@ -133,26 +136,27 @@ export class ServicesService {
       });
     }
 
-    const result = { ...service, files: [] };
     if (file) {
-      if (fileService) {
-        await this.prisma.serviceFile.update({
-          where: { id: fileService.id },
-          data: { fileId: file.id },
-        });
-      } else {
-        await this.prisma.serviceFile.create({
-          data: {
-            serviceId: service.id,
-            fileId: file.id,
-          },
-        });
-      }
-
-      result.files = [file];
+      await this.prisma.serviceFile.create({
+        data: {
+          serviceId: service.id,
+          fileId: file.id,
+        },
+      });
     }
 
-    return result;
+    return await this.prisma.service.findUnique({
+      where: { id: service.id },
+      include: {
+        serviceFiles: {
+          include: {
+            file: {
+              select: { id: true, url: true, name: true, description: true },
+            },
+          },
+        },
+      },
+    });
   }
 
   async delete(user, serviceId: number) {
@@ -169,7 +173,6 @@ export class ServicesService {
       );
 
     if (service.serviceFiles.length) {
-      await this.filesService.deleteFile(service.serviceFiles[0].file);
       await this.filesService.deleteServiceFile(service.serviceFiles[0]);
     }
 
