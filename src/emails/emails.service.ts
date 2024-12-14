@@ -36,14 +36,19 @@ export class EmailsService {
   async handleEmail(emailData) {
     const { sender, recipient: recepient, body, subject } = emailData;
 
-    await this.prisma.email.create({
-      data: {
-        sender,
-        subject,
-        body,
-        recepient,
-      },
-    });
+    try {
+      await this.prisma.email.create({
+        data: {
+          sender,
+          subject,
+          body,
+          recepient,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new NotImplementedException('Email was not saved.');
+    }
 
     return { success: true };
   }
