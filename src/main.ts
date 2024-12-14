@@ -12,7 +12,11 @@ async function bootstrap() {
 
   app.enableCors({
     origin: (origin, callback) => {
-      if (allowedOrigins.includes(origin)) {
+      if (
+        allowedOrigins.includes(origin) ||
+        !origin ||
+        origin.endsWith(process.env.AWS_LAMBDA_ORIGIN)
+      ) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));

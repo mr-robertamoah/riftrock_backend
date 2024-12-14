@@ -1,5 +1,9 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { DeleteObjectsCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectsCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuid } from 'uuid';
 import { File } from '@prisma/client';
@@ -62,4 +66,6 @@ export class AwsS3Service {
       throw new NotImplementedException('Failed to delete file.');
     }
   }
+
+  async getEmails() {}
 }

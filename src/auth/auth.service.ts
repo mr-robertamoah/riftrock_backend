@@ -22,7 +22,7 @@ export class AuthService {
   async signIn(loginDTO: LoginDTO) {
     const user = await this.validateUser(loginDTO.email, loginDTO.password);
 
-    if (!user) throw new UnauthorizedException();
+    if (!user) throw new UnauthorizedException('Credentials are not valid');
 
     const payload = { sub: user.id, email: user.email };
 

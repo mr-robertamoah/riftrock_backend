@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { File, ServiceFile } from '@prisma/client';
+import { File } from '@prisma/client';
 import { AwsS3Service } from 'src/aws-s3/aws-s3.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 

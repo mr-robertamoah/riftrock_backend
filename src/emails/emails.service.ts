@@ -1,15 +1,22 @@
 import {
   Injectable,
   NotFoundException,
+  NotImplementedException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { EmailDTO } from 'src/dto/email.dto';
 import { GetItemsDTO } from 'src/dto/get-items.dto';
 import { MailgunDTO } from 'src/dto/mailgun.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EmailsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private config: ConfigService,
+  ) {}
 
   async saveEmails(mailgunDTO: MailgunDTO) {
     const { sender, recepient, subject, body } = mailgunDTO;
@@ -22,6 +29,55 @@ export class EmailsService {
         recepient,
       },
     });
+
+    return { success: true };
+  }
+
+  async handleEmail(emailData) {
+    const { sender, recipient: recepient, body, subject } = emailData;
+
+    await this.prisma.email.create({
+      data: {
+        sender,
+        subject,
+        body,
+        recepient,
+      },
+    });
+
+    return { success: true };
+  }
+
+  async send(emailDTO: EmailDTO) {
+    const { recepient, body, subject } = emailDTO;
+
+    const ses = new SESClient({
+      region: this.config.get<string>('AWS_REGION'),
+    });
+
+    try {
+      await ses.send(
+        new SendEmailCommand({
+          Source: this.config.get<string>('DANSO_EMAIL'),
+          Destination: {
+            ToAddresses: [recepient],
+          },
+          Message: {
+            Subject: {
+              Data: subject,
+            },
+            Body: {
+              Text: {
+                Data: body,
+              },
+            },
+          },
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+      throw new NotImplementedException('Failed to send email.');
+    }
 
     return { success: true };
   }
