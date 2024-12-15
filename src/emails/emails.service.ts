@@ -34,6 +34,7 @@ export class EmailsService {
   }
 
   async handleEmail(emailData) {
+    // TODO implement getting attachments
     const { sender, recipient: recepient, body, subject } = emailData;
 
     try {
@@ -54,7 +55,8 @@ export class EmailsService {
   }
 
   async send(emailDTO: EmailDTO) {
-    const { recepient, body, subject } = emailDTO;
+    // TODO implement adding of attachments
+    const { recepient, body, subject, sender } = emailDTO;
 
     const ses = new SESClient({
       region: this.config.get<string>('AWS_REGION'),
@@ -63,7 +65,9 @@ export class EmailsService {
     try {
       await ses.send(
         new SendEmailCommand({
-          Source: this.config.get<string>('DANSO_EMAIL'),
+          Source: sender?.length
+            ? sender
+            : this.config.get<string>('DANSO_EMAIL'),
           Destination: {
             ToAddresses: [recepient],
           },
