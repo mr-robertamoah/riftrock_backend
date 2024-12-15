@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -37,13 +38,23 @@ export class EmailsController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  async markEmails(
+  async markEmail(
     @Request() request,
     @Param('id', ParseIntPipe) emailId: number,
   ) {
     return this.emailsService.markEmail(request.user, emailId);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  async deleteEmail(
+    @Request() request,
+    @Param('id', ParseIntPipe) emailId: number,
+  ) {
+    return this.emailsService.delete(request.user, emailId);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getEmails(@Param() emailDTO: GetItemsDTO) {
     return this.emailsService.get(emailDTO);

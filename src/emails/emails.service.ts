@@ -109,6 +109,25 @@ export class EmailsService {
     return email;
   }
 
+  async delete(user, emailId: number) {
+    user = await this.prisma.user.findUnique({ where: { id: user.userId } });
+
+    if (user.role === 'admin')
+      throw new UnauthorizedException('You cannot delete emails.');
+
+    const email = await this.prisma.email.findUnique({
+      where: { id: emailId },
+    });
+
+    if (!email) throw new NotFoundException('Email was not found.');
+
+    await this.prisma.email.delete({
+      where: { id: email.id },
+    });
+
+    return { success: true };
+  }
+
   async get(getEmailsDTO: GetItemsDTO) {
     const limit = getEmailsDTO.limit ? Number(getEmailsDTO.limit) : 10;
     const page = getEmailsDTO.page ? Number(getEmailsDTO.page) : 1;
@@ -125,7 +144,12 @@ export class EmailsService {
     ]);
 
     return {
-      data: emails,
+      data: emails.map((e) => {
+        const data = { ...e };
+        delete data.recepient;
+        data['recipient'] = e.recepient;
+        return data;
+      }),
       meta: {
         total,
         page,
